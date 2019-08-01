@@ -40,6 +40,7 @@ defmodule Phoenix.LiveView.Controller do
         |> Plug.Conn.assign(:live_view_module, view)
         |> Phoenix.Controller.put_view(__MODULE__)
         |> LiveView.Plug.put_cache_headers()
+        |> do_conn_assigns(view)
         |> do_render(content)
 
       {:stop, {:redirect, opts}} ->
@@ -60,4 +61,13 @@ defmodule Phoenix.LiveView.Controller do
     content
   end
   def render(_other, _assigns), do: nil
+  
+  defp do_conn_assigns(%Plug.Conn{} = conn, view) do
+    case view.conn_assigns(conn.assigns) do
+      nil -> conn
+      new_assigns -> 
+        merged_assigns = Map.merge(conn.assigns, new_assigns)
+        Map.put(conn, :assigns, merged_assigns)
+    end 
+  end
 end

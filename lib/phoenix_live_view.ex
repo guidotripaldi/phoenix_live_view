@@ -623,6 +623,8 @@ defmodule Phoenix.LiveView do
   @callback handle_info(msg :: term, Socket.t()) ::
               {:noreply, Socket.t()} | {:reply, term, Socket.t()} | {:stop, Socket.t()}
 
+  @callback conn_assigns(assigns :: map) :: map
+
   @optional_callbacks terminate: 2,
                       handle_params: 3,
                       handle_event: 3,
@@ -637,7 +639,11 @@ defmodule Phoenix.LiveView do
       @impl unquote(__MODULE__)
       def mount(_session, socket), do: {:ok, socket}
 
+      @impl unquote(__MODULE__)
+      def conn_assigns(assigns), do: assigns
+
       defoverridable mount: 2
+      defoverridable conn_assigns: 1
     end
   end
 
